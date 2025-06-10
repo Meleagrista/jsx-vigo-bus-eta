@@ -1,0 +1,3 @@
+# Custom ignored files
+config/.env
+.idea

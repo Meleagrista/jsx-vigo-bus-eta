@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "py-template"
+version = "0.1.0"
+description = "A starter project with boilerplate."
+authors = ["Martín do Río Rico <75792048+Meleagrista@users.noreply.github.com>"]
+license = "GPL-3.0-or-later"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+rich = "^14.0.0"
+pyreadline3 = "^3.5.4"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
