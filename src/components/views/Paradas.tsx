@@ -18,7 +18,7 @@ const Paradas: React.FC = () => {
       {/* Search bar */}
       <div className="mb-3 mt-3 flex items-end gap-2">
         {/* Input container with underline */}
-        <div className="flex-1 border-b border-gray-300">
+        <div className="flex-1 border-b border-gray-light">
           <input
             type="text"
             value={search}
@@ -30,18 +30,18 @@ const Paradas: React.FC = () => {
         </div>
 
         {/* Search button */}
-        <button onClick={handleSearch} className="px-4 py-1 text-white text-base rounded shadow-sm" style={{ backgroundColor: "#f8443c" }}>Buscar</button>
+        <button onClick={handleSearch} className="px-4 py-1 text-white text-base rounded shadow-sm bg-brandRed">Buscar</button>
       </div>
 
       {/* Recent searches */}
       <div>
-        <p className="text-gray-500 text-sm mb-3 text-center">
+        <p className="text-gray-light text-sm mb-3 text-center">
           Últimas paradas consultadas
         </p>
 
         {history.length === 0 ? (
-          <div className="flex flex-col items-center text-gray-400 text-sm mt-4">
-            <FiFileText size={40} className="text-[#f8443c] mb-2" />
+          <div className="flex flex-col items-center text-gray text-sm mt-4">
+            <FiFileText size={40} className="text-brandRed mb-2" />
             <p>No hay paradas recientes para mostrar</p>
           </div>
         ) : (

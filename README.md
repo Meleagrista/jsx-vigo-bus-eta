@@ -67,10 +67,10 @@ Follow the steps below to get started and use the project effectively.
 # Roadmap
 The following features and enhancements are planned for development.
 - [ ] Finish the root page for `Lineas`.
-- [ ] Stablish a common element between `Parada` and `Linea`.
-- [ ] Add the empty view for `Favoritos`.
-- [ ] Change the color of the base font to a dark gray.
-- [ ] Change the selected visual cue for filters in `Favoritos`.
+- [X] Stablish a common element between `Parada` and `Linea`.
+- [X] Add the empty view for `Favoritos`.
+- [X] Change the color of the base font to a dark gray.
+- [X] Change the selected visual cue for filters in `Favoritos`.
 
 <!-- # Contributing
 If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
