@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Item } from "../models/Item";
-import { Parada } from "../models/Parada";
-import { Linea } from "../models/Linea";
+import { Item } from "./models/Item";
+import { Parada } from "./models/Parada";
+import { Linea } from "./models/Linea";
 import { FiFileText } from "react-icons/fi";
 
 type Filter = "todos" | "lineas" | "paradas";

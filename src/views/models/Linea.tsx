@@ -13,6 +13,15 @@ export class Linea extends Item {
     this.color = color;
   }
 
+  toJSON() {
+    return {
+      id: this.id,
+      start: this.start,
+      end: this.end,
+      color: this.color,
+    };
+  }
+
   render(): React.ReactNode {
     const transparentBg = `${this.color}2A`;
 

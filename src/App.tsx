@@ -1,8 +1,8 @@
 import { useState } from "react";
-import NavBar from "./components/NavBar";
-import Paradas from "./components/views/Paradas";
-import Favoritos from "./components/views/Favoritos";
-import Lineas from "./components/views/Lineas";
+import NavBar from "./views/components/NavBar";
+import Paradas from "./views/Paradas";
+import Favoritos from "./views/Favoritos";
+import Lineas from "./views/Lineas";
 
 type View = "paradas" | "favoritos" | "lineas";
 
