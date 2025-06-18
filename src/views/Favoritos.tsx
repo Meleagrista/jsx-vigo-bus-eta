@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Item } from "./models/Item";
-import { Parada } from "./models/Parada";
-import { Linea } from "./models/Linea";
+import { Parada } from "./models/paradas/Parada";
+import { Linea } from "./models/lineas/Linea";
 import { FiFileText } from "react-icons/fi";
 
 type Filter = "todos" | "lineas" | "paradas";
@@ -9,13 +9,13 @@ type Filter = "todos" | "lineas" | "paradas";
 const filters: Filter[] = ["todos", "lineas", "paradas"];
 
 const favoritos: Item[] = [
-  new Parada("742", "Praza América", [
+  new Parada("742", "742", "Praza América", [
     { num: "1", color: "#982135" },
     { num: "12", color: "#0072BC" },
     { num: "23", color: "#F4971E" },
   ]),
-  new Linea("L-1", "Línea 1", "Circular", "#4e75af"),
-  new Parada("123", "Urzaiz 45", [
+  new Linea("L-1", "L-1", "Línea 1", "Circular", "#4e75af"),
+  new Parada("L-1", "L-1", "Urzaiz 45", [
     { num: "4A", color: "#00823E" },
     { num: "5", color: "#F8443C" },
   ]),
@@ -46,6 +46,7 @@ const Favoritos: React.FC = () => {
           </button>
         ))}
       </nav>
+      
       <ul className="divide-y divide-gray-light">
         {favoritosFiltrados.length === 0 ? (
           <>
@@ -57,7 +58,7 @@ const Favoritos: React.FC = () => {
             </div>
           </>
         ) : (
-          favoritosFiltrados.map((item) => item.render())
+          favoritosFiltrados.map((item) => item.list())
         )}
       </ul>
     </section>

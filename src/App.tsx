@@ -3,19 +3,26 @@ import NavBar from "./views/components/NavBar";
 import Paradas from "./views/Paradas";
 import Favoritos from "./views/Favoritos";
 import Lineas from "./views/Lineas";
+import { Linea } from "./views/models/lineas/Linea";
 
-type View = "paradas" | "favoritos" | "lineas";
+type AppState =
+  | { view: "paradas" }
+  | { view: "favoritos" }
+  | { view: "lineas" }
+  | { view: "lineDetail"; line: Linea };
 
 function App() {
-  const [view, setView] = useState<View>("paradas");
+  const [state, setState] = useState<AppState>({ view: "paradas" });
 
   return (
-    <div className="pt-16"> {/* to offset fixed navbar */}
-      <NavBar currentView={view} onNavigate={setView} />
+    <div className="pt-16">
+      <NavBar currentView={state.view === "lineDetail" ? "lineas" : state.view} onNavigate={(v) => setState({ view: v })}/>
+
       <main>
-        {view === "paradas" && <Paradas />}
-        {view === "favoritos" && <Favoritos />}
-        {view === "lineas" && <Lineas />}
+        {state.view === "paradas" && <Paradas />}
+        {state.view === "favoritos" && <Favoritos />}
+        {state.view === "lineas" && (<Lineas onSelectLine={(line) => setState({ view: "lineDetail", line })} />)}
+        {state.view === "lineDetail" && (state.line.render())}
       </main>
     </div>
   );

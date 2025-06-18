@@ -1,19 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { Linea } from "./models/Linea";
-import { fetchLineasFromAPI } from "../services/Lineas"; // adjust path if needed
+import { Linea } from "./models/lineas/Linea";
+import { fetchLineasFromAPI } from "./models/lineas/LineaController"; // adjust path if needed
 
 const LOCAL_STORAGE_KEY = "lineasCache";
 
-const Lineas: React.FC = () => {
+interface Props {
+  onSelectLine: (line: Linea) => void;
+}
+
+const Lineas: React.FC<Props> = ({ onSelectLine }) => {
   const [lineas, setLineas] = useState<Linea[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setLoading(true);
-    fetchLineasFromAPI()
+    fetchLineasFromAPI(true)
       .then(setLineas)
-      .catch((e) => setError("Error al cargar las líneas"))
+      .catch((e) => setError("Error al cargar las líneas."))
       .finally(() => setLoading(false));
   }, []);
 
@@ -23,7 +27,7 @@ const Lineas: React.FC = () => {
 
       {!loading && !error && (
         <ul className="divide-y divide-gray-light">
-          {lineas.map((linea) => linea.render())}
+         {lineas.map((linea) => linea.list(() => onSelectLine(linea)))}
         </ul>
       )}
     </section>

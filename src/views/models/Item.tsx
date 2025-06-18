@@ -2,8 +2,14 @@ import React from "react";
 
 export abstract class Item {
   id: string;
+  code: string;
 
-  constructor(id: string) { this.id = id; }
+  constructor(id: string, code: string) { 
+    this.id = id; 
+    this.code = code;
+  }
 
-  abstract render(): React.ReactNode;
+  abstract render(onBack: () => void): React.ReactNode;
+
+  abstract list(): React.ReactNode;
 }
