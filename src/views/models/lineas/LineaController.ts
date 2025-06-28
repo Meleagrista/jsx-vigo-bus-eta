@@ -111,9 +111,19 @@ export const fetchParadasFromAPI = async (lineaId: string, forceReload = false):
       const data = await res.json();
       const stops: Parada[] = data.map(s => new Parada(s.id, s.code, s.name, s.lines));
 
-      // Update the cache object
-      linea.stopsIda = stops;
-      linea.stopsVuelta = [...stops].reverse();
+      // Remove duplicate if first and last are the same in original order
+      const ida = [...stops];
+      if (ida.length > 1 && ida[0].id === ida[ida.length - 1].id) {
+        ida.pop();
+      }
+      linea.stopsIda = ida;
+
+      // Create reversed list and apply same duplicate check
+      const vuelta = [...stops].reverse();
+      if (vuelta.length > 1 && vuelta[0].id === vuelta[vuelta.length - 1].id) {
+        vuelta.pop();
+      }
+      linea.stopsVuelta = vuelta;
 
       // Save cache in localStorage
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(cache));

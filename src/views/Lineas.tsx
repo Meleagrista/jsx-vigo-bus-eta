@@ -15,7 +15,7 @@ const Lineas: React.FC<Props> = ({ onSelectLine }) => {
 
   useEffect(() => {
     setLoading(true);
-    fetchLineasFromAPI(true)
+    fetchLineasFromAPI(false)
       .then(setLineas)
       .catch((e) => setError("Error al cargar las líneas."))
       .finally(() => setLoading(false));

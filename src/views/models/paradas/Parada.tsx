@@ -1,7 +1,7 @@
 import React from "react";
 import { Item } from "../Item";
 
-type LineBadge = { num: string; color: string };
+export type LineBadge = { id: string; num: string; color: string };
 
 export class Parada extends Item {
   name: string;
@@ -39,33 +39,44 @@ export class Parada extends Item {
 
   dot(lineColor: string): React.ReactNode {
     return (
-      <li className="flex items-center min-h-[64px] relative cursor-pointer hover:bg-gray-100 transition-colors pl-20">
-        <div
-          className="absolute left-14"
-          style={{
-            width: 16,
-            height: 16,
-            borderRadius: "50%",
-            backgroundColor: lineColor,
-            top: "50%",
-            transform: "translateY(-50%)",
-            zIndex: 10,
-          }}
-        />
+      <li className="flex min-h-[48px] cursor-pointer hover:bg-gray-100 transition-colors pl-6 pr-4">
+        {/* Dot and vertical line container */}
+        <div className="flex flex-col items-center mr-4 relative">
+          {/* Line above dot */}
+          <div 
+            className="flex-1 w-px" 
+            style={{ backgroundColor: lineColor }}
+          />
+          {/* Dot */}
+          <div
+            className="w-4 h-4 rounded-full z-10"
+            style={{ backgroundColor: lineColor }}
+          />
+          {/* Line below dot */}
+          <div 
+            className="flex-1 w-px" 
+            style={{ backgroundColor: lineColor }}
+          />
+        </div>
+
+        {/* Text content */}
         <div className="flex-1">
-          <div className="font-bold text-brandBlue">
+          <div className="font-bold text-brandBlue leading-tight mt-1">
             ({this.id}) {this.name}
           </div>
-          <div className="flex flex-wrap gap-1 mt-1">
-            {this.lines.map((line) => (
-              <span
-                key={line.num}
-                className="text-white text-xs font-bold w-6 h-6 flex items-center justify-center rounded"
-                style={{ backgroundColor: line.color }}
-              >
-                {line.num}
-              </span>
-            ))}
+          {/* Line badges or empty space placeholder */}
+          <div className="flex flex-wrap mt-1 mb-1">
+            {this.lines.length > 0
+              ? this.lines.map((line) => (
+                  <span
+                    key={line.num}
+                    className="text-white text-xs font-bold w-6 h-6 flex items-center justify-center rounded"
+                    style={{ backgroundColor: line.color }}
+                  >
+                    {line.num}
+                  </span>
+                ))
+              : <div className="h-6" />} {/* Empty space if no badges */}
           </div>
         </div>
       </li>

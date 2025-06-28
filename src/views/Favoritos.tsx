@@ -10,14 +10,14 @@ const filters: Filter[] = ["todos", "lineas", "paradas"];
 
 const favoritos: Item[] = [
   new Parada("742", "742", "Praza América", [
-    { num: "1", color: "#982135" },
-    { num: "12", color: "#0072BC" },
-    { num: "23", color: "#F4971E" },
+    { id: "1", num: "1", color: "#982135" },
+    { id: "1", num: "12", color: "#0072BC" },
+    { id: "1", num: "23", color: "#F4971E" },
   ]),
   new Linea("L-1", "L-1", "Línea 1", "Circular", "#4e75af"),
   new Parada("L-1", "L-1", "Urzaiz 45", [
-    { num: "4A", color: "#00823E" },
-    { num: "5", color: "#F8443C" },
+    { id: "1", num: "4A", color: "#00823E" },
+    { id: "1", num: "5", color: "#F8443C" },
   ]),
 ];
 

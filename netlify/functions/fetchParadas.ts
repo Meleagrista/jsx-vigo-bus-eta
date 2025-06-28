@@ -1,6 +1,7 @@
 import { Handler } from "@netlify/functions";
 import axios from "axios";
 import { Parada } from "../../src/views/models/paradas/Parada";
+import { LineBadge } from "../../src/views/models/paradas/Parada";
 
 const BASE_URL = "https://www.vitrasa.es/lineas-y-horarios/todas-las-lineas";
 const DEFAULT_COLOR = "#6666ff";
@@ -51,7 +52,12 @@ export const handler: Handler = async (event) => {
       const name: string = props.desBusStop;
       const id: string = props.idBusStop;
       const linesRaw: string[] = props.busLineCrossing || [];
-      const lines = linesRaw.map((lineNum) => ({ num: lineNum, color: DEFAULT_COLOR}));
+
+      const lines: LineBadge[] = linesRaw
+        .map((lineRaw) => lineRaw.split("|"))
+        .filter(([_, num]) => num && num.length <= 4)
+        .map(([id, num]) => ({ id, num: num.toUpperCase(), color: DEFAULT_COLOR }));
+
       return new Parada(id, id, name, lines);
     });
 
