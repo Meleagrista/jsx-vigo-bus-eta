@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { FiFileText } from "react-icons/fi";
 import { Parada } from "../paradas/Parada";
 import { fetchParadasFromAPI } from "./LineaController";
 import { Linea } from "./Linea";
+
+const DEFAULT_COLOR = "#6666ff";
 
 type Filter = "Ida" | "Vuelta";
 
@@ -113,9 +116,22 @@ export const LineaView: React.FC<Props> = ({ lineaId }) => {
 
       {/* Stops */}
       <ul className="relative">
-        {stopsToShow.map((stop) => (
-          <React.Fragment key={stop.id}>{stop.dot(line?.color ?? "#ccc")}</React.Fragment>
-        ))}
+        {stopsToShow.length === 0 ? (
+          <>
+            {/* Spacer for alignment */}
+            <div className="h-6" />
+            <div className="flex flex-col items-center text-gray text-sm mt-4">
+              <FiFileText size={40} className="text-brandRed mb-2" />
+              <p>No se encontraron paradas para esta línea</p>
+            </div>
+          </>
+        ) : (
+          stopsToShow.map((stop) => (
+            <React.Fragment key={stop.id}>
+              {stop.dot(line?.color ?? DEFAULT_COLOR)}
+            </React.Fragment>
+          ))
+        )}
       </ul>
     </section>
   );

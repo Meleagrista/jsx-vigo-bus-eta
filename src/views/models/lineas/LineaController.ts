@@ -1,7 +1,8 @@
 import { Linea } from "./Linea";
-import { Parada } from "../paradas/Parada";
+import { LineBadge, Parada } from "../paradas/Parada";
 
 const LOCAL_STORAGE_KEY = "lineas";
+const DEFAULT_COLOR = "#6666ff";
 
 let cache: Linea[] | null = null;
 let fetching: Promise<Linea[]> | null = null;
@@ -47,12 +48,10 @@ export const fetchLineasFromAPI = async (forceReload = false): Promise<Linea[]> 
 };
 
 export const fetchParadasFromAPI = async (lineaId: string, forceReload = false): Promise<Linea> => {
-  console.log(`[fetchParadasFromAPI] Fetching stops for idBusLine=${lineaId}, forceReload=${forceReload}`);
 
   // Load cache from localStorage if not loaded yet
   if (!cache) {
     const cached = localStorage.getItem(LOCAL_STORAGE_KEY);
-    console.log(`[fetchParadasFromAPI] Cached data found: ${cached ? "yes" : "no"}`);
     if (cached) {
       try {
         // Parse cached lines and reconstruct Linea instances
@@ -60,7 +59,6 @@ export const fetchParadasFromAPI = async (lineaId: string, forceReload = false):
           (l: any) => new Linea(l.id, l.code, l.start, l.end, l.color, l.stopsIda, l.stopsVuelta)
         );
         if (!cache) throw new Error("Cache is null after parsing.");
-        console.log(`[fetchParadasFromAPI] Loaded ${cache.length} lineas from cache`);
       } catch (err) {
         console.warn("[fetchParadasFromAPI] Failed to parse cache, clearing localStorage", err);
         localStorage.removeItem(LOCAL_STORAGE_KEY);
@@ -71,23 +69,16 @@ export const fetchParadasFromAPI = async (lineaId: string, forceReload = false):
     }
   }
 
-  console.log(`[fetchParadasFromAPI] Cache loaded with ${cache.length} lineas`);
-
   // Find the Linea by id
   const linea = cache.find((l) => l.code === lineaId);
   if (!linea) {
     throw new Error(`Linea ${lineaId} not found in cache`);
   }
 
-  console.log(`[fetchParadasFromAPI] Found Linea with ${linea.stopsIda?.length ?? 0} cached stops.`);
-
   // Return cached stops if they exist and no forceReload requested
   if (!forceReload && linea.stopsIda && linea.stopsIda.length > 0 && linea.stopsVuelta && linea.stopsVuelta.length > 0) {
-    console.log(`[fetchParadasFromAPI] Returning cached Linea with ${linea.stopsIda.length} stops`);
     return linea;
   }
-
-  console.log(`[fetchParadasFromAPI] Fetching stops for Linea ${lineaId} from API`);
 
   // Initialize stopPromises if it doesn't exist
   if (!stopPromises) {
@@ -96,7 +87,6 @@ export const fetchParadasFromAPI = async (lineaId: string, forceReload = false):
 
   // If already fetching stops for this line, return that promise
   if (stopPromises && stopPromises[lineaId]) {
-    console.log(`[fetchParadasFromAPI] Returning ongoing fetch promise for idBusLine=${lineaId}`);
     return stopPromises[lineaId];
   }
 
@@ -109,32 +99,38 @@ export const fetchParadasFromAPI = async (lineaId: string, forceReload = false):
       if (!res.ok) throw new Error("Failed to fetch stops");
 
       const data = await res.json();
-      const stops: Parada[] = data.map(s => new Parada(s.id, s.code, s.name, s.lines));
 
-      // Remove duplicate if first and last are the same in original order
-      const ida = [...stops];
-      if (ida.length > 1 && ida[0].id === ida[ida.length - 1].id) {
-        ida.pop();
-      }
-      linea.stopsIda = ida;
+      // Ensure we have Linea metadata (with color) to enrich LineBadge
+      const lineas = cache && cache.length > 0 ? cache : await fetchLineasFromAPI();
 
-      // Create reversed list and apply same duplicate check
-      const vuelta = [...stops].reverse();
-      if (vuelta.length > 1 && vuelta[0].id === vuelta[vuelta.length - 1].id) {
-        vuelta.pop();
-      }
-      linea.stopsVuelta = vuelta;
+      const stops: Parada[] = data.map((s: { 
+        id: string; 
+        code: string; 
+        name: string; 
+        lines: LineBadge[]; 
+      }) => {
+        const enrichedLines = s.lines.map((badge) => {
+          const matchingLinea = lineas.find(l => l.id === badge.id || l.code === badge.id);
+          return {
+            ...badge,
+            color: matchingLinea?.color ?? DEFAULT_COLOR,
+          };
+        });
+
+        return new Parada(s.id, s.code, s.name, enrichedLines);
+      });
+
+      linea.stopsIda = [...stops];
+      linea.stopsVuelta = [...stops].reverse();
 
       // Save cache in localStorage
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(cache));
-
-      console.log(`[fetchParadasFromAPI] Updated Linea stops with ${stops.length} stops`);
 
       return linea;
     })
     .catch(err => {
       console.error(`[fetchParadasFromAPI] Fetch error:`, err);
-      throw err;
+      return linea;
     })
     .finally(() => {
       // Remove promise so next fetch can run

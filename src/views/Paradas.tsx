@@ -40,7 +40,7 @@ const Paradas: React.FC = () => {
         </p>
 
         {history.length === 0 ? (
-          <div className="flex flex-col items-center text-gray text-sm mt-4">
+          <div className="flex flex-col items-center text-gray text-sm mt-20">
             <FiFileText size={40} className="text-brandRed mb-2" />
             <p>No hay paradas recientes para mostrar</p>
           </div>

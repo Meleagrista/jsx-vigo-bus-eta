@@ -61,8 +61,6 @@ export const handler: Handler = async (event) => {
       return new Parada(id, id, name, lines);
     });
 
-    console.log(`[fetchParadas] Fetched ${stops.length} stops for idBusLine=${idBusLine}`);
-
     return {
       statusCode: 200,
       body: JSON.stringify(stops),
