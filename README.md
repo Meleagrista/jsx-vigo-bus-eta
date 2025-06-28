@@ -82,7 +82,7 @@ The following features and enhancements are planned for development.
 
 ## Iteration 28-06-2025
 
-- [ ] Add color to the badges in the `Linea` view.
+- [X] Add color to the badges in the `Linea` view.
 - [ ] Add loading view to avoid placeholder values showing.
 - [ ] Add general stop fetch function.
 
