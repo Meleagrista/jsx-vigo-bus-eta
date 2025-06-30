@@ -38,9 +38,7 @@ export class Linea extends Item {
   }
 
   render(): React.ReactNode {
-    return (
-      <LineaView lineaId={this.code} lineColor={this.color} />
-    );
+    return (<LineaView linea={this} />);
   }
 
   list(onClick?: () => void): React.ReactNode {

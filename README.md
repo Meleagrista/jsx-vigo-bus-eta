@@ -85,6 +85,7 @@ The following features and enhancements are planned for development.
 - [X] Add color to the badges in the `Linea` view.
 - [ ] Add loading view to avoid placeholder values showing.
 - [ ] Add general stop fetch function.
+- [ ] Update view initialization to load whatever data it has first.
 
 <!-- # Contributing
 If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".

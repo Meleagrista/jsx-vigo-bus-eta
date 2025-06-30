@@ -1,16 +1,21 @@
 import { useState } from "react";
 import { FiFileText } from "react-icons/fi";
 
-const Paradas: React.FC = () => {
+interface ParadasProps {
+  onSearchParada: (stopId: string) => void;
+}
+
+const Paradas: React.FC<ParadasProps> = ({ onSearchParada }) => {
   const [search, setSearch] = useState("");
   const [history, setHistory] = useState<string[]>([]);
 
   const handleSearch = () => {
     const trimmed = search.trim();
-    if (trimmed && !history.includes(trimmed)) {
-      setHistory([trimmed, ...history.slice(0, 4)]); // max 5 recent items
+    if (trimmed) {
+      setSearch("");
+      console.log("Buscando parada:", trimmed);
+      onSearchParada(trimmed); 
     }
-    setSearch("");
   };
 
   return (

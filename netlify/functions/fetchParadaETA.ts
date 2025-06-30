@@ -7,12 +7,13 @@ interface ETAResponse {
   minutesArrive: number;
 }
 
-interface AggregatedBusETA {
-  id: string;
-  name: string;
-  color: string;
+interface Arrival {
+  lineId: string;
+  lineName: string;
+  lineColor: string;
   arrivals: number[];
 }
+
 
 const BASE_URL = "https://www.vitrasa.es/detalleparada";
 const DEFAULT_COLOR = "#6666ff";
@@ -46,26 +47,24 @@ export const handler: Handler = async (event) => {
     }
 
     const formData = new URLSearchParams();
-    formData.append(
-      "_com_ado_portlet_parada_AdoParadaPortlet_INSTANCE_e3K3ns9GxruP_busStopID",
-      stopId
-    );
+    console.log("Parsed stopId:", stopId);
+    formData.append("_com_ado_portlet_parada_AdoParadaPortlet_INSTANCE_e3K3ns9GxruP_busStopID", stopId);
 
     const response = await axios.post(BASE_URL, formData, { params });
     const data = response.data;
 
     const entries: ETAResponse[] = data?.jsontraffics2 ?? [];
 
-    const grouped: Record<string, AggregatedBusETA> = {};
+    const grouped: Record<string, Arrival> = {};
 
     for (const entry of entries) {
       const { idBusLine, desBusLine, minutesArrive } = entry;
 
       if (!grouped[idBusLine]) {
         grouped[idBusLine] = {
-          id: idBusLine,
-          name: desBusLine,
-          color: DEFAULT_COLOR,
+          lineId: idBusLine,
+          lineName: desBusLine,
+          lineColor: DEFAULT_COLOR,
           arrivals: [],
         };
       }
@@ -73,7 +72,7 @@ export const handler: Handler = async (event) => {
       grouped[idBusLine].arrivals.push(minutesArrive);
     }
 
-    const result: AggregatedBusETA[] = Object.values(grouped).map((bus) => ({
+    const result: Arrival[] = Object.values(grouped).map((bus) => ({
       ...bus,
       arrivals: bus.arrivals.sort((a, b) => a - b), // Optional: sort times ascending
     }));

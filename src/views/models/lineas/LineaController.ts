@@ -2,25 +2,29 @@ import { Linea } from "./Linea";
 import { LineBadge, Parada } from "../paradas/Parada";
 
 const LOCAL_STORAGE_KEY = "lineas";
-const DEFAULT_COLOR = "#6666ff";
 
-let cache: Linea[] | null = null;
+let lineasCache: Linea[] = [];
+const paradasCache: Record<string, Parada> = {};
+
+// Exported accessor
+export const getParadaById = (id: string): Parada | undefined => paradasCache[id];
+
 let fetching: Promise<Linea[]> | null = null;
 let stopPromises: Record<string, Promise<Linea> | undefined> = {};
 
 export const fetchLineasFromAPI = async (forceReload = false): Promise<Linea[]> => {
   // If we have cache in memory and no forceReload, return it immediately
-  if (cache && !forceReload) {  return cache; }
+  if (lineasCache.length > 0 && !forceReload) {  return lineasCache; }
 
   // Try loading from localStorage if cache not set yet
-  if (!cache && !forceReload) {
+  if (lineasCache.length == 0 && !forceReload) {
     const cached = localStorage.getItem(LOCAL_STORAGE_KEY);
     if (cached) {
       try {
         const parsed = JSON.parse(cached).map((l: any) => new Linea(l.id, l.code, l.start, l.end, l.color));
-        cache = parsed;
-        if (cache == null) { throw new Error("Cache is null after parsing."); }
-        return cache;
+        lineasCache = parsed;
+        if (lineasCache == null) { throw new Error("Cache is null after parsing."); }
+        return lineasCache;
       } catch {
         localStorage.removeItem(LOCAL_STORAGE_KEY);
       }
@@ -36,7 +40,7 @@ export const fetchLineasFromAPI = async (forceReload = false): Promise<Linea[]> 
       if (!res.ok) throw new Error("Failed to fetch");
       const data = await res.json();
       const parsed = data.map((l: Linea) => new Linea(l.id, l.code, l.start, l.end, l.color));
-      cache = parsed;
+      lineasCache = parsed;
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(parsed));
       return parsed;
     })
@@ -50,27 +54,27 @@ export const fetchLineasFromAPI = async (forceReload = false): Promise<Linea[]> 
 export const fetchParadasFromAPI = async (lineaId: string, forceReload = false): Promise<Linea> => {
 
   // Load cache from localStorage if not loaded yet
-  if (!cache) {
+  if (!lineasCache) {
     const cached = localStorage.getItem(LOCAL_STORAGE_KEY);
     if (cached) {
       try {
         // Parse cached lines and reconstruct Linea instances
-        cache = JSON.parse(cached).map(
+        lineasCache = JSON.parse(cached).map(
           (l: any) => new Linea(l.id, l.code, l.start, l.end, l.color, l.stopsIda, l.stopsVuelta)
         );
-        if (!cache) throw new Error("Cache is null after parsing.");
+        if (!lineasCache) throw new Error("Cache is null after parsing.");
       } catch (err) {
         console.warn("[fetchParadasFromAPI] Failed to parse cache, clearing localStorage", err);
         localStorage.removeItem(LOCAL_STORAGE_KEY);
-        cache = [];
+        lineasCache = [];
       }
     } else {
-      cache = [];
+      lineasCache = [];
     }
   }
 
   // Find the Linea by id
-  const linea = cache.find((l) => l.code === lineaId);
+  const linea = lineasCache.find((l) => l.code === lineaId);
   if (!linea) {
     throw new Error(`Linea ${lineaId} not found in cache`);
   }
@@ -101,7 +105,7 @@ export const fetchParadasFromAPI = async (lineaId: string, forceReload = false):
       const data = await res.json();
 
       // Ensure we have Linea metadata (with color) to enrich LineBadge
-      const lineas = cache && cache.length > 0 ? cache : await fetchLineasFromAPI();
+      const lineas = lineasCache && lineasCache.length > 0 ? lineasCache : await fetchLineasFromAPI();
 
       const stops: Parada[] = data.map((s: { 
         id: string; 
@@ -113,18 +117,22 @@ export const fetchParadasFromAPI = async (lineaId: string, forceReload = false):
           const matchingLinea = lineas.find(l => l.id === badge.id || l.code === badge.id);
           return {
             ...badge,
-            color: matchingLinea?.color ?? DEFAULT_COLOR,
+            color: matchingLinea?.color ?? badge.color,
           };
         });
+        
+        const parada = new Parada(s.id, s.code, s.name, enrichedLines);
 
-        return new Parada(s.id, s.code, s.name, enrichedLines);
+        paradasCache[s.id] = parada;
+
+        return parada;
       });
 
       linea.stopsIda = [...stops];
       linea.stopsVuelta = [...stops].reverse();
 
       // Save cache in localStorage
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(cache));
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(lineasCache));
 
       return linea;
     })

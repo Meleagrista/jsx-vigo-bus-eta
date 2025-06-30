@@ -1,16 +1,19 @@
 import React from "react";
 import { Item } from "../Item";
+import { Arrival } from "./ParadaView";
 
 export type LineBadge = { id: string; num: string; color: string };
 
 export class Parada extends Item {
   name: string;
   lines: LineBadge[];
+  arrivals: Arrival[];
 
   constructor(id: string, code:string, name: string, lines: LineBadge[]) {
     super(id, code);
     this.name = name;
     this.lines = lines;
+    this.arrivals = [];
   }
 
   list(): React.ReactNode {

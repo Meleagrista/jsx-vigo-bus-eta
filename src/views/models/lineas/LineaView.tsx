@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { FiFileText } from "react-icons/fi";
-import { Parada } from "../paradas/Parada";
 import { fetchParadasFromAPI } from "./LineaController";
 import { Linea } from "./Linea";
 
@@ -10,12 +9,12 @@ const DEFAULT_COLOR = "#6666ff";
 type Filter = "Ida" | "Vuelta";
 
 interface Props {
-  lineaId: string;
+  linea: Linea;
 }
 
-export const LineaView: React.FC<Props> = ({ lineaId }) => {
+export const LineaView: React.FC<Props> = ({ linea }) => {
   const [filter, setFilter] = useState<Filter>("Ida");
-  const [line, setLine] = useState<Linea | null>(null);
+  const [line, setLine] = useState<Linea>(linea);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -28,7 +27,7 @@ export const LineaView: React.FC<Props> = ({ lineaId }) => {
 
   const loadStops = (forceReload = false) => {
     setLoading(true);
-    fetchParadasFromAPI(lineaId, forceReload)
+    fetchParadasFromAPI(linea.code, forceReload)
       .then((linea) => {
         setLine(linea);
         updateTimestamp();
@@ -44,7 +43,7 @@ export const LineaView: React.FC<Props> = ({ lineaId }) => {
 
   useEffect(() => {
     loadStops(false);
-  }, [lineaId]);
+  }, [linea.code]);
 
   const stopsToShow = (filter === "Ida" ? line?.stopsIda : line?.stopsVuelta) ?? [];
 
